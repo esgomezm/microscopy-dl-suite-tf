@@ -1,14 +1,10 @@
 click
-# opencv-python
 opencv-python-headless
 numpy
 tqdm
-# shutil
 scipy
-numba
 tensorflow==2.2.0
 scikit-image
-# keras
 SimpleITK
 imreg_dft
 openpyxl
