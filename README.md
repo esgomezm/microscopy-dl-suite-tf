@@ -1,5 +1,4 @@
 [![minimal Python version](https://img.shields.io/badge/Python-3.6-6666ff)](https://www.anaconda.com/distribution/)
-![PyPI](https://img.shields.io/pypi/v/TensorFlow?color=orange&label=TensorFlow&logo=TensorFlow)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellowlima.svg)](https://opensource.org/licenses/MIT)
 
 
