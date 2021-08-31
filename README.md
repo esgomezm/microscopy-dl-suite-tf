@@ -13,7 +13,7 @@ git clone https://github.com/esgomezm/microscopy-dl-suite-tf
 pip3 install -r microscopy-dl-suite-tf/dl-suite/requirements.txt
 ```
 
-## Download or place some training data
+## Download or place your data in an accessible directory
 Place the training, validation and test data in three independent folders. Each of them should contain an `input`and `labels` folder. **For 2D images**, the name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If **the ground truth is given as videos**, then the labels should be `name.tif` and `name_Segmentationim-label.tif`for the input and annotated video respectively.
 
 ## Create a configuration file with all the information for the model architecture and training. 
@@ -32,6 +32,16 @@ If you only want to run the test step, it is also possible with the `test.py`:
 python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/config/config_mobilenet_lstm_5.json' 
 ```
 
+## Available model architectures
+
+- `'mobilenet_mobileunet_lstm'`: A pretrained mobilenet in the encoder with skip connections to the decoder of a mobileunet and a ConvLSTM layer at the end that will make the entire architecture recursive.
+- `'mobilenet_mobileunet'`: A pretrained mobilenet in the encoder with skip connections to the decoder of a mobileunet (2D).
+- `'unet_lstm'`: 2D U-Net with ConvLSTM units in the contracting path.
+- `'categorical_unet_transpose'`: 2D U-Net for different labels ({0}, {1}, ...) with transpose convolutions instead of upsampling.
+- `'categorical_unet_fc_dil'`: 2D U-Net for different labels ({0}, {1}, ...) with fully connected dilated convolutions.
+- `'categorical_unet_fc'`: 2D U-Net for different labels ({0}, {1}, ...) with fully connected convolutions.
+- `'categorical_unet'`: 2D U-Net for different labels ({0}, {1}, ...).
+- `'unet'` or `"None"`: 2D U-Net with a single output.
 
 ## Programmed loss-functions
 ### When the output of the network has just one channel: foreground prediction
@@ -56,7 +66,7 @@ python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/
 | argument                  | description                                                                   | example value |
 | ------------------------- | ----------------------------------------------------------------------------- | ------------- |
 | **model parameters**           
-| cnn_name                  | Name used to store the model. It determines the type of network that will be trained. If it contains `categorical_unet`, it will train on different labels ({0}, {1}, ...). Other chances that affect the convolutional layers: `categorical_unet_transpose` (transpose convolutions instead of upsampling), `categorical_unet_fc_dil` (fully connected dilated convolutions), `categorical_unet_fc` (fully connected convolutions). If it contains `lstm`: trains a 2D U-Net with ConvLSTM units in the contracting path. If `mobilenet_mobileunet_lstm`, it will use a pretrained mobilenet in the encoder with skip connections to the decoder of a mobileunet and a ConvLSTM layer at the end that will make the entire architecture recursivel. | "mobilenet_mobileunet_lstm_tips" |
+| cnn_name                  | Model architecture. Options available [here](https://github.com/esgomezm/microscopy-dl-suite-tf##Available_model_architectures)    | "mobilenet_mobileunet_lstm_tips" |
 | OUTPUTPATH                | Directory where the trained model, logs and results are stored                | "externaldata_cce_weighted_001" |
 | TRAINPATH                 | Directory with the source of reference annotations that will be used for training the network. It should contain two folders (`inputs` and `labels`). The name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively.| "/data/train/stack2im" |
 | VALPATH                  | Directory with the source of reference annotations that will be used for validation of the network. It should contain two folders (`inputs` and `labels`). The name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If you are running different configurations of a network or different instances, it might be recommended to keep always the same forlder for this.| "/data/val/stack2im" |
