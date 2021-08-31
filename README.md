@@ -66,7 +66,7 @@ python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/
 | argument                  | description                                                                   | example value |
 | ------------------------- | ----------------------------------------------------------------------------- | ------------- |
 | **model parameters**           
-| cnn_name                  | Model architecture. Options available [here](https://github.com/esgomezm/microscopy-dl-suite-tf##Available_model_architectures)    | "mobilenet_mobileunet_lstm_tips" |
+| cnn_name                  | Model architecture. Options available [here](https://github.com/esgomezm/microscopy-dl-suite-tf#available-model-architectures)    | "mobilenet_mobileunet_lstm_tips" |
 | OUTPUTPATH                | Directory where the trained model, logs and results are stored                | "externaldata_cce_weighted_001" |
 | TRAINPATH                 | Directory with the source of reference annotations that will be used for training the network. It should contain two folders (`inputs` and `labels`). The name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively.| "/data/train/stack2im" |
 | VALPATH                  | Directory with the source of reference annotations that will be used for validation of the network. It should contain two folders (`inputs` and `labels`). The name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If you are running different configurations of a network or different instances, it might be recommended to keep always the same forlder for this.| "/data/val/stack2im" |
