@@ -1,6 +1,7 @@
 [![minimal Python version](https://img.shields.io/badge/Python-3.6-6666ff)](https://www.anaconda.com/distribution/)
 ![PyPI](https://img.shields.io/pypi/v/TensorFlow?color=orange&label=TensorFlow&logo=TensorFlow)
-[![License](https://img.shields.io/badge/License-BSD%203--Clause--Clear-yellowlima.svg)](https://spdx.org/licenses/BSD-3-Clause-Clear.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellowlima.svg)](https://opensource.org/licenses/MIT)
+
 
 # Deep Learning segmentation suite dessigned for 2D microscopy image segmentation
 This repository provides researchers with a code to try different encoder-decoder configurations for the binary segmentation of 2D images in a video. It offers regular 2D U-Net variants and recursive approaches by combining ConvLSTM on top of the encoder-decoder.
