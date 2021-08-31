@@ -5,6 +5,34 @@
 # Deep Learning segmentation suite dessigned for 2D microscopy image segmentation
 This repository provides researchers with a code to try different encoder-decoder configurations for the binary segmentation of 2D images in a video. It offers regular 2D U-Net variants and recursive approaches by combining ConvLSTM on top of the encoder-decoder.
 
+# Quick guide
+## Installation
+Clone this repository and create all the required libraries
+```
+git clone https://github.com/esgomezm/microscopy-dl-suite-tf
+pip3 install -r microscopy-dl-suite-tf/dl-suite/requirements.txt
+```
+
+## Download or place some training data
+Place the training, validation and test data in three independent folders. Each of them should contain an `input`and `labels` folder. **For 2D images**, the name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If **the ground truth is given as videos**, then the labels should be `name.tif` and `name_Segmentationim-label.tif`for the input and annotated video respectively.
+
+## Create a configuration file with all the information for the model architecture and training. 
+
+Check out some [examples](https://github.com/esgomezm/microscopy-dl-suite-tf/tree/main/examples/config) of configuration files. You will need to update the paths to the training, validation and test datasets. All the details for this file is given [here](https://github.com/esgomezm/microscopy-dl-suite-tf#parameter-configuration-in-the-configurationjson).
+
+## Run model training
+Run the file `train.py` indicating the path to the configuration `JSON` that contains all the information. This script will also test the model with the images provided in the `"TESPATH"` field of the configuration file.
+```
+python microscopy-dl-suite-tf/dl-suite/train.py 'microscopy-dl-suite-tf/examples/config/config_mobilenet_lstm_5.json' 
+```
+
+## Run model testing
+If you only want to run the test step, it is also possible with the `test.py`:
+```
+python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/config/config_mobilenet_lstm_5.json' 
+```
+
+
 ## Programmed loss-functions
 ### When the output of the network has just one channel: foreground prediction
 - Weighted binary cross-entropy: define a map of weights for the segmentation and feed the network with three images: input, weights and output.
