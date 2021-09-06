@@ -45,8 +45,8 @@ def load_val_data(config):
 
 def generate_data(config):
     if config.cnn_name.__contains__('lstm'):
-	training_generator = training_videos(config)
-	validation_generator = test_videos(config)
+    	training_generator = training_videos(config)
+    	validation_generator = test_videos(config)
 
     else:
         if config.datagen_type.__contains__('contours'):

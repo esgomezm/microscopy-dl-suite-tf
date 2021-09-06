@@ -14,13 +14,32 @@ from internals.tiling_strategy import model_prediction, model_prediction_lstm
 from models.builder import build_model
 from data_generators.build_data import generate_data
 from internals.build_processed_videos import build_videos
+import random
 
 # Read the configuration file with all the metadata and information about the training.
 PATH2CONFIG = sys.argv[1]
 # PATH2CONFIG = 'trained_config/config_docker_local.json'
 
 config = Dict2Obj(PATH2CONFIG)
+
+## Fix a seed if we want a model to be initialize always in the same manner.
+if config.fix_model_initializer == 1:
+    seed = config.model_seed
+    random.seed(seed)
+    
 keras_model = build_model(config)
+
+
+if config.fix_train_initializer == 1:
+    # Fix a seed if we want data generator to be initilized always in the same way.
+    seed = config.train_seed
+    random.seed(seed)
+else:
+    # We need a random value just in case we fixed the model initializer.
+    # Otherwise, we would be fixing always the data generator in the same way.
+    seed = random.randint(0,100000)
+    random.seed(seed)
+    
 training_generator, validation_generator = generate_data(config)
 
 
