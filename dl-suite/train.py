@@ -23,14 +23,14 @@ PATH2CONFIG = sys.argv[1]
 config = Dict2Obj(PATH2CONFIG)
 
 ## Fix a seed if we want a model to be initialize always in the same manner.
-if config.fix_model_initializer == 1:
+if config.model_fix_initializer == 1:
     seed = config.model_seed
     random.seed(seed)
     
 keras_model = build_model(config)
 
 
-if config.fix_train_initializer == 1:
+if config.train_fix_initializer == 1:
     # Fix a seed if we want data generator to be initilized always in the same way.
     seed = config.train_seed
     random.seed(seed)
