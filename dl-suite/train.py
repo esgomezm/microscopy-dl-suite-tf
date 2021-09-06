@@ -14,7 +14,8 @@ from internals.tiling_strategy import model_prediction, model_prediction_lstm
 from models.builder import build_model
 from data_generators.build_data import generate_data
 from internals.build_processed_videos import build_videos
-import random
+from numpy import random
+from tensorflow.random import set_seed
 
 # Read the configuration file with all the metadata and information about the training.
 PATH2CONFIG = sys.argv[1]
@@ -22,23 +23,26 @@ PATH2CONFIG = sys.argv[1]
 
 config = Dict2Obj(PATH2CONFIG)
 
-## Fix a seed if we want a model to be initialize always in the same manner.
+# Fix a seed if we want a model to be initialize always in the same manner.
+# Tensorflow has its own random generator that needs also to be seeded.
 if config.model_fix_initializer == 1:
-    seed = config.model_seed
-    random.seed(seed)
+    print("Seed {} fixed for model initialization".format(config.model_seed))
+    random.seed( config.model_seed )
+    set_seed( config.model_seed )
     
 keras_model = build_model(config)
 
 
 if config.train_fix_initializer == 1:
+    print("Seed {} fixed for training data generator".format(config.train_seed))
     # Fix a seed if we want data generator to be initilized always in the same way.
-    seed = config.train_seed
-    random.seed(seed)
+    random.seed( config.train_seed )
+    set_seed( config.train_seed )
 else:
     # We need a random value just in case we fixed the model initializer.
     # Otherwise, we would be fixing always the data generator in the same way.
-    seed = random.randint(0,100000)
-    random.seed(seed)
+    random.seed(random.randint(100000))
+    set_seed(random.randint(100000))
     
 training_generator, validation_generator = generate_data(config)
 
