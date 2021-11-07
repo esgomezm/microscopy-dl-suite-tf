@@ -25,19 +25,19 @@ config = Dict2Obj(PATH2CONFIG)
 
 # Fix a seed if we want a model to be initialize always in the same manner.
 # Tensorflow has its own random generator that needs also to be seeded.
-if config.model_fix_initializer == 1:
-    print("Seed {} fixed for model initialization".format(config.model_seed))
-    random.seed( config.model_seed )
-    set_seed( config.model_seed )
+if config.model_seed_initializer != "None":
+    print("Seed {} fixed for model initialization".format(config.model_seed_initializer))
+    random.seed( config.model_seed_initializer )
+    set_seed( config.model_seed_initializer )
     
 keras_model = build_model(config)
 
 
-if config.train_fix_initializer == 1:
-    print("Seed {} fixed for training data generator".format(config.train_seed))
+if config.train_seed_initializer != "None":
+    print("Seed {} fixed for training data generator".format(config.train_seed_initializer))
     # Fix a seed if we want data generator to be initilized always in the same way.
-    random.seed( config.train_seed )
-    set_seed( config.train_seed )
+    random.seed( config.train_seed_initializer )
+    set_seed( config.train_seed_initializer )
 else:
     # We need a random value just in case we fixed the model initializer.
     # Otherwise, we would be fixing always the data generator in the same way.
@@ -45,9 +45,6 @@ else:
     set_seed(random.randint(100000))
     
 training_generator, validation_generator = generate_data(config)
-
-
-
 
 
 # Define callbacks and load pretrained weights
