@@ -43,7 +43,7 @@ def sampling_pdf(y, pdf, height, width):
     return indexh, indexw
 
 
-def random_crop(x, y, crop_size, pdf=1, sync_seed=None):
+def random_crop(x, y, crop_size, pdf=1, sync_seed=0):
     """
     x is 3D data: [height,width, z] or [height,width, t]
     y is assumed to be 2D: [height, width]
@@ -54,7 +54,8 @@ def random_crop(x, y, crop_size, pdf=1, sync_seed=None):
     elif x.shape[0] == crop_size[0] or x.shape[1] == crop_size[1]:
         return x[:crop_size[0], :crop_size[1]], y[:crop_size[0], :crop_size[1]]
     else:
-        np.random.seed(sync_seed)
+        if np.abs(sync_seed) > 0:
+            np.random.seed(sync_seed)
         offseth, offsetw = sampling_pdf(y, pdf, crop_size[0], crop_size[1])
 
         lr = offseth - np.floor(crop_size[0] // 2)
@@ -79,7 +80,7 @@ def random_crop_complex(x, y
                         , weights
                         , random_crop_size_input
                         , random_crop_size_output
-                        , pdf=1, sync_seed=None):
+                        , pdf=1, sync_seed=0):
     """
     x is 2D data or 3D for channels or time dimenstion. Please let the 3rd dimension that does not affect the crop, in axis=-1
     pdf is a 2D image representing the sampling distribution to crop the patches
@@ -93,7 +94,8 @@ def random_crop_complex(x, y
             weights = center_crop(weights[:random_crop_size_input[0], :random_crop_size_input[1]], random_crop_size_output)
         return x[:random_crop_size_input[0], :random_crop_size_input[1]], y, y_marks, weights
     else:
-        np.random.seed(sync_seed)
+        if np.abs(sync_seed) > 0:
+            np.random.seed(sync_seed)
         offseth, offsetw = sampling_pdf(y, pdf,
                                         random_crop_size_input[0],
                                         random_crop_size_input[1])
