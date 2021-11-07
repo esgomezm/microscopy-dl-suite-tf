@@ -157,6 +157,7 @@ class DataGeneratorLSTM(BaseGenerator):
         y = sitk.GetArrayFromImage(y)
         LENGTH = y.shape[0]
         t = np.random.randint(0, LENGTH - 1)
+        t=1
         sub_y = y[t]
         if t < self.video_length - 1:
             sub_x = np.zeros((self.video_length, x.shape[1], x.shape[2]))
