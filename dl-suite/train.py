@@ -32,20 +32,13 @@ if config.model_seed_initializer != "None":
     
 keras_model = build_model(config)
 
-
 if config.train_seed_initializer != "None":
     print("Seed {} fixed for training data generator".format(config.train_seed_initializer))
     # Fix a seed if we want data generator to be initilized always in the same way.
     random.seed( config.train_seed_initializer )
     set_seed( config.train_seed_initializer )
-else:
-    # We need a random value just in case we fixed the model initializer.
-    # Otherwise, we would be fixing always the data generator in the same way.
-    random.seed(random.randint(100000))
-    set_seed(random.randint(100000))
-    
-training_generator, validation_generator = generate_data(config)
 
+training_generator, validation_generator = generate_data(config)
 
 # Define callbacks and load pretrained weights
 # ----------------------------------------------
