@@ -11,7 +11,6 @@ import plantcv
 from plantcv import plantcv as pcv
 from scipy.ndimage import distance_transform_edt
 import pandas as pd
-from numba import njit
 
 def connect_connectedcomponents(concomp, thickness = 2):    
     im = (concomp>0).astype(np.uint8)
@@ -25,7 +24,6 @@ def connect_connectedcomponents(concomp, thickness = 2):
     for i in range(len(points)-1):
         cv2.line(im, points[i], points[i+1], (1), thickness)        
     return im
-    
 
 def geodesic_distance_transform(m):
     mask = m.mask
@@ -88,7 +86,6 @@ def roundnessCalculator(object_matrix, projected=False):
     #    # Obtain the roundness given by SimpleITK
     #    roundness = cell_label.GetRoundness(1)    
     return roundness
-
 
 def centroidCalculator(cell):
     """
@@ -260,7 +257,6 @@ def protrusion_instances_morphology(cell, tip_labels, tips_coords, centroid, pix
     tips_info['Diameter'] = diam
     
     return tips_info
-
 
 # for l in labels:
 #     cell = (frame==l).astype(np.uint8)

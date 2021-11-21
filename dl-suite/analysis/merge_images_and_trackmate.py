@@ -13,45 +13,28 @@ import time
 import sys
 from analysis.prepare_videos4track import smooth_video
 from analysis.morphology import protrusion_instances_morphology
-from analysis.extract_dynamics import protrusions_mechanics_from_tracks
 
 def merge_seg_track(tracks_path, video_path, OUTPUTPATH, th=75, sigma=2):
     sys.stdout.write('Merging the tracks of video {}\n'.format(video_path))
-    tracks = np.genfromtxt(tracks_path, delimiter=',')
-
     # Make sure that there is some tracking.
-    if len(tracks.shape) != 1:
-        # Tracking ID	Timepoint	Time (secs)	X pos	Y pos
-        tracks = tracks[1:]
-        TrackID = (tracks[:, 0] + 1).astype(np.uint8)
-        TrackINFO = (tracks[:, [1, 3, 4]] / [1, 0.802, 0.802]).astype(np.uint16)  # convert microns to pixels
-
+    # Tracking ID	Timepoint	Time (secs)	X pos	Y pos
+    track = sitk.ReadImage(tracks_path)
+    track = sitk.GetArrayFromImage(track)
+    if np.sum(track) > 0:
         mask = sitk.ReadImage(video_path)
         mask = sitk.GetArrayFromImage(mask)
         mask = (mask > 0).astype(np.uint8)
-
-        S = smooth_video(255 * mask, sigma=sigma)
-        # Threshold the image to make it binary    
-        S_clean = (S > th).astype(np.uint8)
-        S = (S > 0).astype(np.uint8)
         for t in range(mask.shape[0]):
             detections = np.zeros_like(mask[t], dtype=np.uint8)
             # Get connected components from the original binary masks
             idx, res = cv2.connectedComponents(mask[t])
-            # Get connected components from the smoothed image (to complement the masks)
-            idx_S, res_S = cv2.connectedComponents(S[t])
-            S_clean[t] = np.multiply(S_clean[t], res_S)
-            # idx_Sclean, res_Sclean = cv2.connectedComponents(S_clean[t])
-            # Positions
-            positions = TrackINFO[TrackINFO[:, 0] == t][:, 1:]
-            ID = TrackID[TrackINFO[:, 0] == t]
-
-            # print at each position (keypoint) its corresponding track label
-            for coord, i in zip(positions, ID):
-                cell_mask_id_S = res_S[coord[1], coord[0]]
-                if cell_mask_id_S > 0:
-                    intersection = np.multiply(res, res_S == cell_mask_id_S)
-                    if np.sum(intersection) > 0:
+            u = np.unique(track[t])
+            if len(u) > 1:
+                u = u[1:]
+                for i in u:
+                    cell_mask_id_S = res[track[t] == i]
+                    if np.sum(cell_mask_id_S) > 0:
+                        intersection = np.multiply(res, track[t] == i)
                         candidates = np.array(np.unique(intersection, return_counts=True))
                         candidates = candidates[:, 1:]
                         candidates = candidates[0, candidates[1] == np.max(candidates[1])][0]
@@ -59,22 +42,14 @@ def merge_seg_track(tracks_path, video_path, OUTPUTPATH, th=75, sigma=2):
                         # give the track id to the mask of the cell
                         detections[indexes] = np.int(i)
                     else:
-                        indexes = np.where(S_clean[t] == cell_mask_id_S)
+                        indexes = np.where(track[t] == i)
                         # give the track id to the mask of the cell
                         detections[indexes] = np.int(i)
-
-                        # Update the mask time frame with the information from the tracks
             mask[t] = detections
-            # sys.stdout.write("\rTime: t = {0} processed\n".format(t))
-            # sys.stdout.flush()
         root = os.path.dirname(video_path)
         video_path = video_path.split(root)[-1]
         video_path = video_path[1:]
-        # video_path = video_path.split('/')[-1]
-        # video_path = video_path.split("'\'")[-1]
-        # print(os.path.join(OUTPUTPATH, video_path))
         sitk.WriteImage(sitk.GetImageFromArray(mask), os.path.join(OUTPUTPATH, video_path))
-
 
 def process_track_dir(path2tracks, path2mask, OUTPUTPATH):
     """
@@ -93,7 +68,7 @@ def process_track_dir(path2tracks, path2mask, OUTPUTPATH):
             os.makedirs(os.path.join(OUTPUTPATH, f))
         files = os.listdir(os.path.join(path2mask, f))
 
-        _path2tracks = path2tracks + '/' + f
+        _path2tracks = os.path.join(path2tracks, f)
         _path2mask = os.path.join(path2mask, f)
         _OUTPUTPATH = os.path.join(OUTPUTPATH, f)
 
@@ -101,13 +76,10 @@ def process_track_dir(path2tracks, path2mask, OUTPUTPATH):
             process_track_dir(_path2tracks, _path2mask, _OUTPUTPATH)
         else:
             for video in files:
-                tracks = "detections_" + video + "spots_properties.csv"
-                tracks_path = _path2tracks + '/' + tracks
+                tracks_path = os.path.join(_path2tracks, "LblImg_instances_" + video)
                 print('Tracks ' + tracks_path)
                 print(' ')
                 # Tracks preserve the detection video name and detections, the video of the mask.
-                # video = tracks.split('detections_')[-1]
-                # video = video.split('spots_properties')[0]
                 video_path = os.path.join(_path2mask, video)
                 print('Processing {}'.format(video))
                 print(' ')
@@ -117,7 +89,6 @@ def process_track_dir(path2tracks, path2mask, OUTPUTPATH):
                 print('Finished. {} already processed.'.format(video_path))
                 print(' ')
                 print("Time elapsed: ", t1)  # CPU seconds elapsed (floating point)
-
 
 def find_mitotic_cells(splits, non_splits, split_tracks):
     """
@@ -148,7 +119,6 @@ def find_mitotic_cells(splits, non_splits, split_tracks):
             for m in merge:
                 relation.append([m, l])
     return relation
-
 
 def add_split_info(path2dynamics, videos_splits, videos_no_splits, tracks, OUTPUTPATH):
     if not os.path.exists(OUTPUTPATH):
@@ -189,53 +159,3 @@ def add_split_info(path2dynamics, videos_splits, videos_no_splits, tracks, OUTPU
                         df['Split Track'].iloc[index] = r[1]
                     df.to_excel(writer, sheet_name=sheet)
             writer.close()     
-
-def combine_protrusion_tracks(prot_track_path, cell_tracks_video_path, cell_excels_path, OUTPUTPATH, pixel_size=0.802):
-    if not os.path.exists(OUTPUTPATH):
-        os.makedirs(OUTPUTPATH)
-    files = os.listdir(prot_track_path)
-    if not files[0].__contains__('.csv'):
-        for f in files:
-            print(f)
-            _prot_track_path = os.path.join(prot_track_path, f)
-            _cell_tracks_video_path = os.path.join(cell_tracks_video_path, f)
-            _cell_excels_path = os.path.join(cell_excels_path, f)
-            _OUTPUTPATH = os.path.join(OUTPUTPATH, f)
-            combine_protrusion_tracks(_prot_track_path, 
-                                      _cell_tracks_video_path, 
-                                      _cell_excels_path, _OUTPUTPATH,
-                                      pixel_size = pixel_size)
-    else:
-        excel_name = os.path.join(OUTPUTPATH, os.path.basename(cell_excels_path) + '.xlsx')
-        cell_excels_path = os.path.join(cell_excels_path,
-                                        os.path.basename(cell_excels_path) + '.xlsx')
-        writer = pd.ExcelWriter(excel_name)
-        for f in files:
-            if f.__contains__('spots_properties.csv'):
-                print(f)
-                t0 = time.time()
-                video_name = f.split('spots_properties.csv')[0]
-                
-                prot_info = protrusions_mechanics_from_tracks(video_name, prot_track_path, 
-                                                 cell_tracks_video_path, 
-                                                 cell_excels_path, 
-                                                 pixel_size=pixel_size)
-                sheet = f.split('.tif')[0]            
-                prot_info.to_excel(writer, sheet_name=sheet)
-                t1 = time.time() - t0
-                print("Time elapsed: ", t1)
-        writer.close()    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
