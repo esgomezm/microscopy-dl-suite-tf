@@ -4,8 +4,6 @@ Created on Wed April 09 2021
 GitHub username: esgomezm
 """
 import os
-
-
 import sys
 
 

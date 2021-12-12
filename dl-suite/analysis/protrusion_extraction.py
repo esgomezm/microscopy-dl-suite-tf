@@ -50,6 +50,11 @@ def create_protrusions_localization(video_path, OUTPUTPATH, pixel_size=0.802, mi
         start_time = time.time()
         track_video = sitk.ReadImage(video_path)
         track_video = sitk.GetArrayFromImage(track_video)
+        # remove labels from the edges to avoid having indexes out of bounds
+        # track_video[:, :, 0] = 0
+        # track_video[:, :, -1] = 0
+        # track_video[:, 0, :] = 0
+        # track_video[:, -1, :] = 0
         labels = np.unique(track_video)
         if sum(labels) > 0:
             for t in range(len(track_video)):
@@ -62,12 +67,18 @@ def create_protrusions_localization(video_path, OUTPUTPATH, pixel_size=0.802, mi
                 for l in frame_labels:
                     # We need to remove the mitosis to avoid problems with geodesic distance
                     print('Cell with ID {}'.format(l))
+                    # to colve some problems with the segmentation
+                    if video_path.__contains__("255-354"):
+                        # Correct for spurious pixels
+                        if l == 5 or l == 7 or l == 8:
+                            l=-1
                     cell = (frame == l).astype(np.uint8)
-                    idx, concomp = cv2.connectedComponents(cell)
-                    if idx > 2:
-                        cell = connect_connectedcomponents(concomp, thickness=2)
-                    C = centroidCalculator(cell)
-                    frame_tips = print_protrusions_localization(frame_tips, cell, C, pixel_size, min_len)
+                    if np.sum(cell) > 0:
+                        idx, concomp = cv2.connectedComponents(cell)
+                        if idx > 2:
+                            cell = connect_connectedcomponents(concomp, thickness=2)
+                        C = centroidCalculator(cell)
+                        frame_tips = print_protrusions_localization(frame_tips, cell, C, pixel_size, min_len)
                 track_video[t] = frame_tips
 
             # Store the video

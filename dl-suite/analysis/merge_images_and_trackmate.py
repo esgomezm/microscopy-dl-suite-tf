@@ -11,8 +11,6 @@ import numpy as np
 import cv2
 import time
 import sys
-from analysis.prepare_videos4track import smooth_video
-from analysis.morphology import protrusion_instances_morphology
 
 def merge_seg_track(tracks_path, video_path, OUTPUTPATH, th=75, sigma=2):
     sys.stdout.write('Merging the tracks of video {}\n'.format(video_path))
