@@ -14,7 +14,7 @@ pip3 install -r microscopy-dl-suite-tf/dl-suite/requirements.txt
 ```
 
 ## Download or place your data in an accessible directory
-Place the training, validation and test data in three independent folders. Each of them should contain an `input`and `labels` folder. **For 2D images**, the name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If **the ground truth is given as videos**, then the inputs and labels should have the same name.
+Download the [example data from Zenodo](https://zenodo.org/deposit/5777994). Place the training, validation and test data in three independent folders. Each of them should contain an `input`and `labels` folder. **For 2D images**, the name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If **the ground truth is given as videos**, then the inputs and labels should have the same name.
 
 ## Create a configuration .json file with all the information for the model architecture and training. 
 
