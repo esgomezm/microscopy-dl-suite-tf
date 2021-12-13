@@ -14,9 +14,9 @@ pip3 install -r microscopy-dl-suite-tf/dl-suite/requirements.txt
 ```
 
 ## Download or place your data in an accessible directory
-Place the training, validation and test data in three independent folders. Each of them should contain an `input`and `labels` folder. **For 2D images**, the name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If **the ground truth is given as videos**, then the labels should be `name.tif` and `name_Segmentationim-label.tif`for the input and annotated video respectively.
+Place the training, validation and test data in three independent folders. Each of them should contain an `input`and `labels` folder. **For 2D images**, the name of the images should be `raw_000.tif` and `instance_ids_000.tif` for the input and ground truth images respectively. If **the ground truth is given as videos**, then the inputs and labels should have the same name.
 
-## Create a configuration file with all the information for the model architecture and training. 
+## Create a configuration .json file with all the information for the model architecture and training. 
 
 Check out some [examples](https://github.com/esgomezm/microscopy-dl-suite-tf/tree/main/examples/config) of configuration files. You will need to update the paths to the training, validation and test datasets. All the details for this file is given [here](https://github.com/esgomezm/microscopy-dl-suite-tf#parameter-configuration-in-the-configurationjson).
 
@@ -31,7 +31,14 @@ If you only want to run the test step, it is also possible with the `test.py`:
 ```
 python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/config/config_mobilenet_lstm_5.json' 
 ```
+## Cell tracking from the instance segmentations
+Videos with instance segmentations can be easily tracked with [TrackMate](https://imagej.net/plugins/trackmate/). TrackMate is compatible with cell splitting, merging, and gap filling, making it suitable for the task.
 
+The cells in our 2D videos exit and enter the focus plane, so we fill part of the gaps caused by these irregularities. We apply a Gaussian filter along the time axis on the segmented output images. The filtered result is merged with the output masks of the model as follows: all binary masks are preserved, and the positive values of the filtered image are included as additional masks. Those objects smaller than 100 pixels are discarded. 
+
+This processing is contained in the file `tracking.py`, in the section called `Process the binary images and create instance segmentations`. TrackMate outputs a new video with the information of the tracks given as uniquely labelled cells. Then, such information can be merged witht he original segmentation (without the temporal interpolation), using the code section `Merge tracks and segmentations`.
+
+# Technicalities
 ## Available model architectures
 
 - `'mobilenet_mobileunet_lstm'`: A pretrained mobilenet in the encoder with skip connections to the decoder of a mobileunet and a ConvLSTM layer at the end that will make the entire architecture recursive.
@@ -62,7 +69,7 @@ python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/
 - (Weighted) categorical cross-entropy: keras classical categorical cross-entropy
 - Sparse categorical cross-entropy: same as the categorical cross-entropy but it allows the user to enter labelled grounf truth with a single channel and as many labels as classes, rather tha in a one-hote encoding fashion.
   
-# Parameter configuration in the configuration.json
+## Parameter configuration in the configuration.json
 | argument                  | description                                                                   | example value |
 | ------------------------- | ----------------------------------------------------------------------------- | ------------- |
 | **model parameters**           
@@ -108,6 +115,6 @@ python microscopy-dl-suite-tf/dl-suite/test.py 'microscopy-dl-suite-tf/examples/
 
 
 
-### Notes about the code reused from different sources or the CNN architecture definitions
+# Notes about the code reused from different sources or the CNN architecture definitions
 **U-Net for binary segmentation**
 U-Net architecture for TensorFlow 2 based on the example given in https://www.kaggle.com/advaitsave/tensorflow-2-nuclei-segmentation-unet
