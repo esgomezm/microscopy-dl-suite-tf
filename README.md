@@ -68,7 +68,13 @@ This processing is contained in the file `tracking.py`, in the section called `P
 
 - (Weighted) categorical cross-entropy: keras classical categorical cross-entropy
 - Sparse categorical cross-entropy: same as the categorical cross-entropy but it allows the user to enter labelled grounf truth with a single channel and as many labels as classes, rather tha in a one-hote encoding fashion.
-  
+
+## Prepare the data
+
+- If you want to create a set of ground truth data with the format specified in the Cell Tracking Challenge, you can use the script [`prepare_videos_ctc.py`](https://github.com/esgomezm/microscopy-dl-suite-tf/blob/main/dl-suite/additional_scripts/prepare_videos_ctc.py).
+- If you want to create 2D images from the videos, you can use the script [`prepare_data.py`](https://github.com/esgomezm/microscopy-dl-suite-tf/blob/main/dl-suite/additional_scripts/prepare_data.py).
+- In the folder [`additional_scripts`](https://github.com/esgomezm/microscopy-dl-suite-tf/tree/main/dl-suite/additional_scripts) you will find ImageJ macros or python code to keep processing the data to generate borders around the segmented cells for example.
+
 ## Parameter configuration in the configuration.json
 | argument                  | description                                                                   | example value |
 | ------------------------- | ----------------------------------------------------------------------------- | ------------- |
