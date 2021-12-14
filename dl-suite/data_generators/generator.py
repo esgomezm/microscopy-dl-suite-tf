@@ -194,9 +194,7 @@ class DataGeneratorLSTM(BaseGenerator):
             for patch in range(self.patch_batch):
                 for i, ID in enumerate(list_IDs_temp):
                     video_name = ID.split('.')[0]
-                    labels_name = video_name.split('stackreg_')[0] + \
-                                  video_name.split('stackreg_')[-1] + \
-                                  "_Segmentationim-label"
+                    labels_name = video_name
                     video_name = "{0}/inputs/{1}.tif".format(self.dataset_path, video_name)
                     labels_name = "{0}/labels/{1}.tif".format(self.dataset_path, labels_name)
                     # Create a substack
