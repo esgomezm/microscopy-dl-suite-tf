@@ -43,5 +43,5 @@
  "newinfer_padding": [115, 115],
  "newinfer_data": "/content/HT1080WT_PHASECONTRAST/test",
  "newinfer_output_folder_name": "test_output_keep1130_keep_01010",
- "PATH2VIDEOS": "/content/HT1080WT_PHASECONTRAST/test/videos2im_relation.csv"
+ "PATH2VIDEOS": "/content/HT1080WT_PHASECONTRAST/test/stack2im/videos2im_relation.csv"
 }
