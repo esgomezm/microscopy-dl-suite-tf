@@ -193,54 +193,56 @@ class DataGeneratorLSTM(BaseGenerator):
         if self.module == 'train':
             for patch in range(self.patch_batch):
                 for i, ID in enumerate(list_IDs_temp):
-                    video_name = ID.split('.')[0]
-                    labels_name = video_name
-                    video_name = "{0}/inputs/{1}.tif".format(self.dataset_path, video_name)
-                    labels_name = "{0}/labels/{1}.tif".format(self.dataset_path, labels_name)
-                    # Create a substack
-                    aux_x, aux_y = self.create_time_window(video_name, labels_name)
-                    augmented_x, augmented_y = data_augmentation_time(aux_x, aux_y, self)
-                    augmented_x = np.transpose(augmented_x, [2, 0, 1])
-                    x[j, ..., 0] = augmented_x
-                    # Store ground truth
-                    augmented_y[augmented_y > 0] = 1
-                    # Check if one hot representation is needed
-                    if self.weights_loss == 'categorical_crossentropy':
-                        augmented_y = one_hot_it(augmented_y, [0, 1])
-                    # augmented_y_marks[augmented_y_marks>0] = 1
-                    if self.weights_loss == 'categorical_crossentropy':
-                        y[j, 0] = augmented_y
-                    else:
-                        y[j, 0, ..., 0] = augmented_y
-                    j += 1
+                  if ID.__contains__('tif'):
+                      video_name = ID.split('.tif')[0]
+                      labels_name = video_name
+                      video_name = "{0}/inputs/{1}.tif".format(self.dataset_path, video_name)
+                      labels_name = "{0}/labels/{1}.tif".format(self.dataset_path, labels_name)
+                      # Create a substack
+                      aux_x, aux_y = self.create_time_window(video_name, labels_name)
+                      augmented_x, augmented_y = data_augmentation_time(aux_x, aux_y, self)
+                      augmented_x = np.transpose(augmented_x, [2, 0, 1])
+                      x[j, ..., 0] = augmented_x
+                      # Store ground truth
+                      augmented_y[augmented_y > 0] = 1
+                      # Check if one hot representation is needed
+                      if self.weights_loss == 'categorical_crossentropy':
+                          augmented_y = one_hot_it(augmented_y, [0, 1])
+                      # augmented_y_marks[augmented_y_marks>0] = 1
+                      if self.weights_loss == 'categorical_crossentropy':
+                          y[j, 0] = augmented_y
+                      else:
+                          y[j, 0, ..., 0] = augmented_y
+                      j += 1
         elif self.module == 'test':
             # print("Creating validation data...")
             for patch in range(self.patch_batch):
                 for i, ID in enumerate(list_IDs_temp):
-                    ID = ID.split('_')[-1].split('.')[0]
-                    aux_x = read_input_videos("{0}/inputs/raw_{1}.tif".format(self.dataset_path, ID),
-                                              normalization=self.normalization)
+                  if ID.__contains__('tif'):
+                      ID = ID.split('_')[-1].split('.')[0]
+                      aux_x = read_input_videos("{0}/inputs/raw_{1}.tif".format(self.dataset_path, ID),
+                                                normalization=self.normalization)
 
-                    aux_y = sitk.ReadImage("{0}/labels/instance_ids_{1}.tif".format(self.dataset_path, ID))
-                    aux_y = sitk.GetArrayFromImage(aux_y)
-                    aux_y = (aux_y[-1] > 0).astype(np.uint8)
+                      aux_y = sitk.ReadImage("{0}/labels/instance_ids_{1}.tif".format(self.dataset_path, ID))
+                      aux_y = sitk.GetArrayFromImage(aux_y)
+                      aux_y = (aux_y[-1] > 0).astype(np.uint8)
 
-                    if self.dim_input[0] < aux_x.shape[1]:
-                        # Place the time dimension at the end (axis=-1).
-                        aux_x = np.transpose(aux_x, [1, 2, 0])
-                        aux_x, aux_y = random_crop(aux_x, aux_y, (self.dim_input[0], self.dim_input[1]), pdf=self.pdf)
-                        # Place the time dimension at the beginning (axis=0).
-                        aux_x = np.transpose(aux_x, [2, 0, 1])
-                    x[j, ..., 0] = aux_x
-                    # Store ground truth
-                    aux_y = (aux_y > 0).astype(np.uint8)
-                    if self.weights_loss == 'categorical_crossentropy':
-                        aux_y = one_hot_it(aux_y, [0, 1])
-                        y[j, 0] = aux_y
-                    else:
-                        y[j, 0, ..., 0] = aux_y
-                    del aux_y, aux_x
-                    j += 1
+                      if self.dim_input[0] < aux_x.shape[1]:
+                          # Place the time dimension at the end (axis=-1).
+                          aux_x = np.transpose(aux_x, [1, 2, 0])
+                          aux_x, aux_y = random_crop(aux_x, aux_y, (self.dim_input[0], self.dim_input[1]), pdf=self.pdf)
+                          # Place the time dimension at the beginning (axis=0).
+                          aux_x = np.transpose(aux_x, [2, 0, 1])
+                      x[j, ..., 0] = aux_x
+                      # Store ground truth
+                      aux_y = (aux_y > 0).astype(np.uint8)
+                      if self.weights_loss == 'categorical_crossentropy':
+                          aux_y = one_hot_it(aux_y, [0, 1])
+                          y[j, 0] = aux_y
+                      else:
+                          y[j, 0, ..., 0] = aux_y
+                      del aux_y, aux_x
+                      j += 1
 
         x = x.astype(np.float32)
         y = y.astype(np.uint8)
