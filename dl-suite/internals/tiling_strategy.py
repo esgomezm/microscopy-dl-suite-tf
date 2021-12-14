@@ -275,7 +275,6 @@ def model_prediction_lstm(path2im, output_dir, PATH2VIDEOS, model, time_window, 
         sys.stdout.write("\rProcessing video {0}:\n".format(video_name))
         im = read_input_videos(os.path.join(path2im, 'inputs', video_name), normalization=normalization)
 
-        video_name = video_name.split('_stackreg_')[0] + '_' + video_name.split('_stackreg_')[1] #remove weird things in the name
         video_name = video_name.split('.')[0] # remove file format (.tif)
 
         frame_names = [x.split(';')[1] for x in files if x.split(';')[0].__contains__(video_name)]
