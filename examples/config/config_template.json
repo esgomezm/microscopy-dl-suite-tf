@@ -1,9 +1,9 @@
 {
  "cnn_name": "mobilenet_mobileunet_lstm_",
- "OUTPUTPATH": "/content/drive/MyDrive/BiiG/3D-PROTUCEL/SERVER-RESULTS/mobilenet_lstm_masks_experiment_3",
- "TRAINPATH": "/content/drive/MyDrive/Projectos/3D-PROTUCEL/Code/data/train_ht_pc",
- "TESTPATH": "/content/drive/MyDrive/Projectos/3D-PROTUCEL/Code/data/test",
- "VALPATH": "/content/drive/MyDrive/Projectos/3D-PROTUCEL/Code/data/val",
+ "OUTPUTPATH": "/content/mobilenet_lstm_masks_experiment",
+ "TRAINPATH": "/content/HT1080WT_PHASECONTRAST/train",
+ "TESTPATH": "/content/HT1080WT_PHASECONTRAST/test",
+ "VALPATH": "/content/HT1080WT_PHASECONTRAST/val",
  "model_n_filters":  16,
  "model_pools": 3,
  "model_kernel_size": [3,3],
@@ -39,9 +39,9 @@
  "datagen_sampling_pdf": 500000,
  "normalization": "PERCENTILE",
  "newinfer_uneven_illumination": "False",
- "newinfer_epoch_process_test": "/content/drive/MyDrive/BiiG/3D-PROTUCEL/SERVER-RESULTS/mobilenet_lstm_experiment_decoder_2/checkpoints/weights_best.hdf5",
+ "newinfer_epoch_process_test": "/content/my_fine_tuned_model/checkpoints/weights_best.hdf5",
  "newinfer_padding": [115, 115],
- "newinfer_data": "/content/drive/MyDrive/BiiG/3D-PROTUCEL/data/test",
+ "newinfer_data": "/content/HT1080WT_PHASECONTRAST/test",
  "newinfer_output_folder_name": "test_output_keep1130_keep_01010",
- "PATH2VIDEOS": "/content/drive/MyDrive/BiiG/3D-PROTUCEL/data/test/videos2im_relation.csv"
+ "PATH2VIDEOS": "/content/HT1080WT_PHASECONTRAST/test/videos2im_relation.csv"
 }
