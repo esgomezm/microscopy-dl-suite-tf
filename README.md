@@ -4,7 +4,21 @@
 
 # Deep Learning segmentation suite dessigned for 2D microscopy image segmentation
 This repository provides researchers with a code to try different encoder-decoder configurations for the binary segmentation of 2D images in a video. It offers regular 2D U-Net variants and recursive approaches by combining ConvLSTM on top of the encoder-decoder.
+# Citation
+If you found this code useful for your research, please, cite the corresponding preprint:
 
+[Estibaliz Gómez-de-Mariscal, Hasini Jayatilaka, Özgün Çiçek, Thomas Brox, Denis Wirtz, Arrate Muñoz-Barrutia, *Search for temporal cell segmentation robustness in phase-contrast microscopy videos*, arXiv 2021 (arXiv:2112.08817).](https://arxiv.org/abs/2112.08817)
+
+```
+@misc{gómezdemariscal2021search,
+      title={Search for temporal cell segmentation robustness in phase-contrast microscopy videos}, 
+      author={Estibaliz Gómez-de-Mariscal and Hasini Jayatilaka and Özgün Çiçek and Thomas Brox and Denis Wirtz and Arrate Muñoz-Barrutia},
+      year={2021},
+      eprint={2112.08817},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
 # Quick guide
 ## Installation
 Clone this repository and create all the required libraries
