@@ -3,7 +3,7 @@ opencv-python-headless
 numpy
 tqdm
 scipy
-tensorflow==2.2.0
+tensorflow==2.5.2
 scikit-image
 SimpleITK
 imreg_dft
